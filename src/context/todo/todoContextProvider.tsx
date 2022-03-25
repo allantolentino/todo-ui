@@ -1,4 +1,3 @@
-import { StringLiteralLike } from "typescript";
 import { useTodo } from "../../hooks/useTodo";
 import { TodoContext } from "./todoContext";
 

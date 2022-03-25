@@ -1,20 +1,20 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useState } from "react";
 import { AuthContext } from "./authContext";
 
-const LOGIN_URL: string = "https://localhost:5001/Users/Login";
-const REGISTER_URL: string = "https://localhost:5001/Users/Register";
+const LOGIN_URL: string = "https://b6g1.azurewebsites.net/Users/Login";
+const REGISTER_URL: string = "https://b6g1.azurewebsites.net/Users/Register";
 
 export const AuthProvider: React.FC<{}> = (props) => {
     const [authenticated, setAuthenticated] = useState<boolean>(false);
     const [success, setSuccess] = useState<boolean | undefined | null>();
     const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<any | undefined>();
+    const [errors, setError] = useState<string[]>([]);
 
     const login = async (email: string, password: string)=> {
         try {
             setSuccess(undefined);
-            setError(undefined);
+            setError([]);
             setLoading(true);
 
             const token = await axios.post(LOGIN_URL,
@@ -28,7 +28,13 @@ export const AuthProvider: React.FC<{}> = (props) => {
             setSuccess(true);
         } catch (err: any) {
             setSuccess(false);
-            setError(err.response.data);
+            if(err.response?.data[""]){
+                setError(err.response?.data[""]);
+            }
+            else if(err.response.data.errors)
+                setError(err.response?.data?.errors);
+            else
+                setError(["Something went wrong. Please try again."]);
         } finally {
             setLoading(false);
         }
@@ -39,7 +45,7 @@ export const AuthProvider: React.FC<{}> = (props) => {
         
         try {
             setSuccess(undefined);
-            setError(undefined);
+            setError([]);
             setLoading(true);
 
             const response = await axios.post<string>(REGISTER_URL,
@@ -54,7 +60,14 @@ export const AuthProvider: React.FC<{}> = (props) => {
             result = response.data;
         } catch (err: any) {
             setSuccess(false);
-            setError(err.response.data);
+
+            if(err.response?.data[""]){
+                setError(err.response?.data[""]);
+            }
+            else if(err.response?.data?.errors)
+                setError(err.response.data.errors);
+            else
+                setError(["Something went wrong. Please try again."]);
         } finally {
             setLoading(false);
         }
@@ -67,7 +80,7 @@ export const AuthProvider: React.FC<{}> = (props) => {
             authenticated: authenticated, 
             success: success,
             loading: loading,
-            error: error,
+            errors: errors,
             login: login,
             register: register}}>
             {props.children}

@@ -1,8 +1,7 @@
-import { Grid, Typography, ListItem, IconButton, ListItemText, List as MuiList, Card, CardContent, CardActions, Button } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { useContext } from "react";
 import { TodoContext } from "../../context/todo/todoContext";
 import { Details } from "./Details";
-import DeleteIcon from '@mui/icons-material/Delete';
 
 export const List = () => {
     const todoContext = useContext(TodoContext)

@@ -1,33 +1,25 @@
 import { Grid, Typography, TextField, Button } from "@mui/material"
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
 export const Register = () => {
-    const { loading, error, register } = useAuth();
+    const { loading, errors, register } = useAuth();
 
-    const [email, setEmail] = useState<string>('');
-    const [username, setUsername] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [confirmPassword, setConfirmPassword] = useState<string>('');
-    const [confirmEmail, setConfirmEmail] = useState<string>('');
+    const [email, setEmail] = useState<string>("");
+    const [username, setUsername] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [confirmPassword, setConfirmPassword] = useState<string>("");
+    const [confirmEmail, setConfirmEmail] = useState<string>("");
 
     const [disableInputs, setDisableInputs] = useState<boolean>(false);
-    const [registerError, setRegisterError] = useState<string>("");
 
     useEffect(() => {
         setDisableInputs(loading);
         setDisableInputs(confirmEmail.length > 0);
 
-        if(error){
-            setRegisterError("Something went wrong. Please try again.");
-        }
-    }, [loading, error, confirmEmail]);
+    }, [loading, confirmEmail]);
 
     const registerUser = async () => {
-        setRegisterError("");
-        
         const response = await register!(username, email, password, confirmPassword);
         
         setConfirmEmail(response);
@@ -67,12 +59,12 @@ export const Register = () => {
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid item sx={{width: 1/5}}>
+            <Grid item>
                 <Typography variant={"caption"} component="div">
-                    {registerError}
+                    {errors}
                 </Typography>
             </Grid>
-            <Grid item sx={{width: 1/5}}>
+            <Grid item>
                 {
                     !confirmEmail && <Button disabled={disableInputs} type={"submit"} fullWidth variant="contained">Submit</Button>
                 }
@@ -81,9 +73,7 @@ export const Register = () => {
                 }
             </Grid>
             <Grid item>
-                {
-                    !confirmEmail && <Button href="/login" variant="text">Login</Button>
-                }
+                <Button href="/login" variant="text">Login</Button>
             </Grid>
         </Grid>
     </form>

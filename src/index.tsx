@@ -3,10 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { Login } from '@mui/icons-material';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Register } from './components/Register';
-import { Todo } from './components/Todo';
 import { AuthProvider } from './context/auth/authContextProvider';
 
 ReactDOM.render(
