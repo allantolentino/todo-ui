@@ -1,9 +1,9 @@
-import { Grid, TextField, Button } from "@mui/material";
-import React, { useContext, useState } from "react";
-import { TodoContext } from "../../context/todo/todoContext";
+import { Grid, TextField, Button, Box, CircularProgress, LinearProgress } from "@mui/material";
+import React, { useState } from "react";
+import { useTodo } from "../../hooks/useTodo";
 
 export const Add = () => {
-    const todoContext = useContext(TodoContext);
+    const { loading, addTask } = useTodo();
     
     const [text, setText] = useState<string>('');
 
@@ -11,28 +11,20 @@ export const Add = () => {
         setText(e.target.value);
     };
 
-    const onAddTaskHandler = () => {
-        if(text && todoContext.addTask)
-            todoContext.addTask(text);
-    };
-
     const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if(text && todoContext.addTask)
-            todoContext.addTask(text);
+        if(text && addTask) addTask(text);
+
+        setText("");
     };
 
     return(
-    <form onSubmit={onFormSubmit}>
-        <Grid container alignItems={"center"} spacing={2}>
-            <Grid item sx={{width: 1}}>
-                <TextField fullWidth onChange={onChangeTextHandler} label="Enter task" variant="standard"/>
-            </Grid>
-            <Grid item sx={{width: 1}}>
-                <Button fullWidth onClick={() => onAddTaskHandler()} variant="contained">Add</Button>
-            </Grid>
-        </Grid>
-    </form>
+        <form onSubmit={onFormSubmit}>
+            <TextField autoComplete="off" 
+                        value={text} 
+                        onChange={onChangeTextHandler} 
+                        label="Enter task" variant="standard"/>
+        </form>
     );
 };

@@ -6,6 +6,7 @@ const LOGIN_URL: string = "https://b6g1.azurewebsites.net/Users/Login";
 const REGISTER_URL: string = "https://b6g1.azurewebsites.net/Users/Register";
 
 export const AuthProvider: React.FC<{}> = (props) => {
+    const [token, setToken] = useState<string>("");
     const [authenticated, setAuthenticated] = useState<boolean>(false);
     const [success, setSuccess] = useState<boolean | undefined | null>();
     const [loading, setLoading] = useState<boolean>(false);
@@ -17,13 +18,14 @@ export const AuthProvider: React.FC<{}> = (props) => {
             setError([]);
             setLoading(true);
 
-            const token = await axios.post(LOGIN_URL,
+            const response = await axios.post<string>(LOGIN_URL,
                 JSON.stringify({ email, password }),
                 {
                     headers: { 'Content-Type': 'application/json' }
                 }
             );
 
+            setToken(response.data);
             setAuthenticated(true);
             setSuccess(true);
         } catch (err: any) {
@@ -78,6 +80,7 @@ export const AuthProvider: React.FC<{}> = (props) => {
     return(
         <AuthContext.Provider value={{
             authenticated: authenticated, 
+            token: token,
             success: success,
             loading: loading,
             errors: errors,

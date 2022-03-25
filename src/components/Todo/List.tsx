@@ -1,33 +1,29 @@
-import { Grid, Typography } from "@mui/material";
-import { useContext } from "react";
-import { TodoContext } from "../../context/todo/todoContext";
+import { CircularProgress, Grow, LinearProgress, Typography, Zoom } from "@mui/material";
+import { Box } from "@mui/system";
+import { useEffect } from "react";
+import { TransitionGroup } from "react-transition-group";
+import { useTodo } from "../../hooks/useTodo";
 import { Details } from "./Details";
 
 export const List = () => {
-    const todoContext = useContext(TodoContext)
+    const { tasks, loading, getTasks } = useTodo()
 
-    return(
-        <Grid container alignItems={"center"} direction={"column"}>
-            <Grid item>
-                {
-                    todoContext.tasks.length > 0 && 
-                    <Grid container direction={"row"}  spacing={2} justifyContent={"center"}>
-                        {
-                            todoContext.tasks.map(p => 
-                                <Grid item key={p.id}>
-                                    <Details {...p} />
-                                </Grid>
-                            )
-                        }
-                    </Grid>
-                }
-                {
-                    !todoContext.tasks.length && 
-                    <Typography>
-                        You don't have any tasks!
-                    </Typography>
-                }
-            </Grid>
-        </Grid>
-    );
+    useEffect(() => {
+        getTasks!();
+    }, [])
+
+    return(<>
+        {
+            tasks.length > 0 && tasks.map(p =>  <Details key={p.id} {...p} />)
+        }
+        {
+            !loading && !tasks.length && 
+            <Box sx={{height: "50vh"}}>
+                <Typography variant="h4">
+                    You don't have any tasks!
+                </Typography>
+            </Box>
+        }
+        {loading && <Box m={2} sx={{width: 1}} textAlign={"center"}><CircularProgress /></Box>}
+    </>);
 };
