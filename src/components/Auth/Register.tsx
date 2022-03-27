@@ -1,27 +1,24 @@
-import { Grid, Typography, TextField, Button, Alert, Snackbar, Card, CardContent } from "@mui/material"
+import { Grid, Typography, TextField, Button, Card, CardContent } from "@mui/material"
 import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 
 export const Register = () => {
-    const { loading, errors, register } = useAuth();
+    const { loading, register } = useAuth();
 
     const [email, setEmail] = useState<string>("");
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
     const [confirmEmail, setConfirmEmail] = useState<string>("");
-
     const [disableInputs, setDisableInputs] = useState<boolean>(false);
-    const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
 
     useEffect(() => {
         setDisableInputs(loading || confirmEmail.length > 0);
-        if(errors?.length) setShowSnackbar(true);
-    }, [loading, errors, confirmEmail]);
+    }, [loading, confirmEmail]);
 
     const registerUser = async () => {
         const response = await register!(username, email, password, confirmPassword);
-        //Test
+
         setConfirmEmail(response);
     };
 
@@ -33,15 +30,6 @@ export const Register = () => {
 
     return (
     <>
-        <Snackbar
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            autoHideDuration={5000}
-            open={showSnackbar}
-            onClose={() => setShowSnackbar(false)}>
-          <Alert onClose={() => setShowSnackbar(false)} severity={"error"} sx={{ width: '100%' }}>
-            {errors[0]}
-          </Alert>
-        </Snackbar>
         <form onSubmit={onSubmit}>
             <div className="register container">
                 <Card className="wrapper">
