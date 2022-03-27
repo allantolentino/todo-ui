@@ -15,9 +15,8 @@ export const AuthProvider: React.FC<{}> = (props) => {
     const [errors, setError] = useState<string[]>([]);
 
     useEffect(() => {
-        localStorage.setItem("todoJwt", token);
-
         if(token) {
+            localStorage.setItem("todoJwt", token);
             axios.defaults.headers.common["Authorization"] = token;
             setAuthenticated(true);
         }
