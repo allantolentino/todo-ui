@@ -1,9 +1,11 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthContext } from "./authContext";
 
-const LOGIN_URL: string = "https://b6g1.azurewebsites.net/Users/Login";
-const REGISTER_URL: string = "https://b6g1.azurewebsites.net/Users/Register";
+axios.defaults.baseURL = "https://b6g1.azurewebsites.net";
+
+const LOGIN_URL: string = "/Users/Login";
+const REGISTER_URL: string = "/Users/Register";
 
 export const AuthProvider: React.FC<{}> = (props) => {
     const [token, setToken] = useState<string>("");
@@ -11,6 +13,25 @@ export const AuthProvider: React.FC<{}> = (props) => {
     const [success, setSuccess] = useState<boolean | undefined | null>();
     const [loading, setLoading] = useState<boolean>(false);
     const [errors, setError] = useState<string[]>([]);
+
+    useEffect(() => {
+        localStorage.setItem("todoJwt", token);
+
+        if(token) {
+            axios.defaults.headers.common["Authorization"] = token;
+            setAuthenticated(true);
+        }
+    }, [token]);
+
+    useEffect(() => {
+        const jwt = localStorage.getItem("todoJwt");
+
+        if(jwt) {
+            axios.defaults.headers.common["Authorization"] = jwt;
+            setAuthenticated(true);
+            setToken(jwt);
+        }
+    }, []);
 
     const login = async (email: string, password: string)=> {
         try {
@@ -40,6 +61,13 @@ export const AuthProvider: React.FC<{}> = (props) => {
         } finally {
             setLoading(false);
         }
+    }
+
+    const logout = () => {
+        setToken("");
+        setAuthenticated(false);
+        localStorage.removeItem("todoJwt");
+        axios.defaults.headers.common["Authorization"] = "";
     }
 
     const register = async (username: string, email: string, password: string, confirmPassword: string): Promise<string> => {
@@ -85,6 +113,7 @@ export const AuthProvider: React.FC<{}> = (props) => {
             loading: loading,
             errors: errors,
             login: login,
+            logout: logout,
             register: register}}>
             {props.children}
         </AuthContext.Provider>

@@ -7,6 +7,7 @@ export interface IAuthContext {
     loading: boolean;
     errors: string[];
     login?: (username: string, password: string) => void;
+    logout?: () => void;
     register?: (username: string, email: string, password: string, confirmPassword: string) => Promise<string>;
 };
 

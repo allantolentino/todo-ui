@@ -20,7 +20,6 @@ interface ITodoModel {
 }
 
 export const TodoContextProvider: React.FC<{}> = (props) => {
-    const { token } = useAuth();
     const [todos, setTodos] = useState<ITodo[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<string[]>([]);
@@ -31,13 +30,9 @@ export const TodoContextProvider: React.FC<{}> = (props) => {
 
     const getTodos = async () => {
         try {
-            setErrors([]);
             setLoading(true);
 
-            const response = await axios.get<ITodoModel[]>(GET_URL,
-                {
-                    headers: {"Authorization": token}
-                });
+            const response = await axios.get<ITodoModel[]>(GET_URL);
 
             const items: ITodo[] = response.data.map(d => {
                 return {
@@ -56,12 +51,11 @@ export const TodoContextProvider: React.FC<{}> = (props) => {
 
     const addTodo = async (text: string) => {
         try {
-            setErrors([]);
             setLoading(true);
 
             await axios.post(POST_URL, { "text": text },
             {
-                headers: { "Content-Type": "application/json", "Authorization": token }
+                headers: { "Content-Type": "application/json"}
             });
 
         } catch (err: any) {
@@ -73,12 +67,11 @@ export const TodoContextProvider: React.FC<{}> = (props) => {
 
     const deleteTodo = async (id: number) => {
         try {
-            setErrors([]);
             setLoading(true);
 
             await axios.delete(DELETE_URL(id),
             {
-                headers: { "Content-Type": "application/json", "Authorization": token }
+                headers: { "Content-Type": "application/json" }
             });
         } catch (err: any) {
             handleError(err);
@@ -90,7 +83,6 @@ export const TodoContextProvider: React.FC<{}> = (props) => {
     const updateTodo = async (id: number, 
                               text: string) => {
         try {
-            setErrors([]);
             setLoading(true);
 
             await axios.put(PUT_URL(id), 
@@ -98,7 +90,7 @@ export const TodoContextProvider: React.FC<{}> = (props) => {
                 "text": text
             },
             {
-                headers: { "Content-Type": "application/json", "Authorization": token }
+                headers: { "Content-Type": "application/json"}
             });
         } catch (err: any) {
             handleError(err);

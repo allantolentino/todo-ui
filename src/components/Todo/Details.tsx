@@ -13,7 +13,7 @@ import { useTodo } from "../../hooks/useTodo";
 import { ITodo } from "../../models/ITodo";
 
 export const Details = (props: ITodo) => {
-    const { deleteTodo, updateTodo } = useTodo();
+    const { getTodos, deleteTodo, updateTodo } = useTodo();
     
     /** Todo states */
     const [text, setText] = useState<string>(props.text);
@@ -48,7 +48,7 @@ export const Details = (props: ITodo) => {
     /** Update todo when user clicks away from input */
     const onClickAwayHandler = (e: MouseEvent | TouchEvent) => {
         //Only call update when component is in edit mode
-        if(editMode && text && props.text != text) updateTodo(props.id, text);
+        if(editMode && text && props.text != text) updateTodo(props.id, text).finally(() => getTodos!());
         //Revert to original when empty
         else if(!text.length) setText(props.text);
 
@@ -58,7 +58,7 @@ export const Details = (props: ITodo) => {
 
     /** Delete todo when user clicks on the delete button */
     const onDeleteHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
-        deleteTodo(props.id);
+        deleteTodo(props.id).finally(() => getTodos!());
     };
 
     return (
@@ -72,7 +72,7 @@ export const Details = (props: ITodo) => {
                     !editMode && 
                     <Typography className="textLabel" 
                                 onClick={onToggleEdit}> 
-                        {props.text}
+                        {text}
                     </Typography>
                 }
                 {
