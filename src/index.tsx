@@ -5,14 +5,17 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/auth/authContextProvider';
+import { TodoContextProvider } from './context/todo/todoContextProvider';
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route path="/*" element={<App />}/>
-        </Routes>
+        <TodoContextProvider>
+          <Routes>
+            <Route path="/*" element={<App />}/>
+          </Routes>
+        </TodoContextProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>,

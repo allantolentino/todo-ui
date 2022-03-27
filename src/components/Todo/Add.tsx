@@ -1,9 +1,9 @@
-import { Grid, TextField, Button, Box, CircularProgress, LinearProgress } from "@mui/material";
+import { TextField } from "@mui/material";
 import React, { useState } from "react";
 import { useTodo } from "../../hooks/useTodo";
 
 export const Add = () => {
-    const { loading, addTask } = useTodo();
+    const { addTodo: addTask } = useTodo();
     
     const [text, setText] = useState<string>('');
 
@@ -14,17 +14,20 @@ export const Add = () => {
     const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if(text && addTask) addTask(text);
+        addTask(text);
 
         setText("");
     };
 
     return(
-        <form onSubmit={onFormSubmit}>
-            <TextField autoComplete="off" 
-                        value={text} 
-                        onChange={onChangeTextHandler} 
-                        label="Enter task" variant="standard"/>
-        </form>
+    <form onSubmit={onFormSubmit}>
+        <TextField  autoComplete="off" 
+                    fullWidth
+                    size={"small"}
+                    value={text} 
+                    variant={"outlined"} 
+                    placeholder="Create new task..."
+                    onChange={onChangeTextHandler} />
+    </form>
     );
 };

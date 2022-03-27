@@ -1,29 +1,29 @@
-import { CircularProgress, Grow, LinearProgress, Typography, Zoom } from "@mui/material";
-import { Box } from "@mui/system";
 import { useEffect } from "react";
-import { TransitionGroup } from "react-transition-group";
 import { useTodo } from "../../hooks/useTodo";
 import { Details } from "./Details";
 
 export const List = () => {
-    const { tasks, loading, getTasks } = useTodo()
+    const { getTodos, todos, loading } = useTodo();
 
+    /** Load todos when component loads */
     useEffect(() => {
-        getTasks!();
-    }, [])
+        getTodos!();
+    }, []);
 
-    return(<>
+    return(
+    <>
         {
-            tasks.length > 0 && tasks.map(p =>  <Details key={p.id} {...p} />)
+            /** Load all tasks if there are any */
+            todos.length > 0 && 
+            todos.map(todo => 
+                <div key={todo.id} className="todo">
+                    <Details {...todo} />
+                </div>)
         }
         {
-            !loading && !tasks.length && 
-            <Box sx={{height: "50vh"}}>
-                <Typography variant="h4">
-                    You don't have any tasks!
-                </Typography>
-            </Box>
+            /** Show an empty message */
+            !loading && !todos.length && <h2 style={{textAlign: "center"}}>You don't have any tasks!</h2>
         }
-        {loading && <Box m={2} sx={{width: 1}} textAlign={"center"}><CircularProgress /></Box>}
-    </>);
+    </>
+    );
 };

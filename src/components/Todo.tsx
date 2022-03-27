@@ -1,35 +1,30 @@
-import { Box, Grid, LinearProgress, Typography } from "@mui/material";
-import { TodoContextProvider } from "../context/todo/todoContextProvider";
+import { Alert, CircularProgress, Snackbar } from "@mui/material";
+import { useState, useEffect } from "react";
 import { useTodo } from "../hooks/useTodo";
 import { Add } from "./Todo/Add";
 import { List } from "./Todo/List";
 
 export const Todo = () => {
-    const { loading } = useTodo();
+    const {loading} = useTodo();
 
     return (
-    <TodoContextProvider>
-        <Grid container 
-              direction={"column"} 
-              alignItems={"center"}
-              justifyContent={"center"}
-              spacing={2}>
-            <Grid item>
-                <Typography align={"center"} 
-                            component={"div"}
-                            variant={"h5"}>
-                    Todo
-                </Typography>
-            </Grid>
-            <Grid item container direction={"column"} alignItems={"center"} justifyContent={"center"}>
+    <>
+        <div className="add container">
+            <div className="wrapper">
                 <Add/>
-            </Grid>
-            <Grid item container 
-                alignItems={"flex-start"}
-                justifyContent={"center"}>
-                <List />
-            </Grid>
-        </Grid>
-      </TodoContextProvider>
-    );
+            </div>
+        </div>
+        <div className="list container">
+            <List />
+        </div>
+        {
+            /** Loading indicator */
+            loading &&
+            <div className="loading container">
+                <div className="wrapper">
+                    <CircularProgress />
+                </div>
+            </div>
+        }
+    </>);
 };

@@ -1,69 +1,103 @@
-import { Button, Card, CardActions, CardContent, Typography, TextField, ClickAwayListener, IconButton, Grow } from "@mui/material";
-import { Box } from "@mui/system";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Card, 
+        CardActions, 
+        CardContent, 
+        Typography,
+        ClickAwayListener, 
+        IconButton, 
+        Grow, 
+        Fade, 
+        InputBase } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useTodo } from "../../hooks/useTodo";
 import { ITodo } from "../../models/ITodo";
-import DeleteIcon from '@mui/icons-material/Delete';
 
 export const Details = (props: ITodo) => {
-    const { deleteTask, updateTask } = useTodo();
-
-    const [isEdit, setIsEdit] = useState<boolean>(false);
+    const { deleteTodo, updateTodo } = useTodo();
+    
+    /** Todo states */
     const [text, setText] = useState<string>(props.text);
-    const [visible, setVisible] = useState<boolean>(true);
+    const [completed, setCompleted] = useState<boolean>(props.completed);
 
+    /** UI states */
+    const [editMode, setEditMode] = useState<boolean>(false);
+    const [showOtherActions, setShowOtherActions] = useState<boolean>(false);
+
+    /** Make sure that the component's states are up-to-date */
+    useEffect(() => {
+        setText(props.text);
+        setCompleted(props.completed);
+    }, [props.completed, props.text]);
+
+    /** Update state of text based on user input */
     const onChangeTextHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         setText(e.target.value);
     };
 
-    const onDeleteTask = () => {
-        setVisible(false);
+    /** Toggle edit mode when user clicks on the component */
+    const onToggleEdit = (e: React.MouseEvent<HTMLSpanElement>) => {
+        setEditMode(!editMode);
+    };
 
-        deleteTask!(props.id);
-    }
+    /** Show or hide the card action buttons */
+    const handleMouseEvent = (action: "showButtons" | "hideButtons") => 
+                             (e: React.MouseEvent<HTMLDivElement>) => {
+        setShowOtherActions(action === "showButtons");
+    };
 
-    const onUpdateTask = () => {
-        updateTask!(props.id, text);
-        setIsEdit(false);
-    }
+    /** Update todo when user clicks away from input */
+    const onClickAwayHandler = (e: MouseEvent | TouchEvent) => {
+        //Only call update when component is in edit mode
+        if(editMode && text && props.text != text) updateTodo(props.id, text);
+        //Revert to original when empty
+        else if(!text.length) setText(props.text);
+
+        //Always set edit mode to false when user clicks away from the text box
+        setEditMode(false);
+    };
+
+    /** Delete todo when user clicks on the delete button */
+    const onDeleteHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+        deleteTodo(props.id);
+    };
 
     return (
-            <Grow in={visible} timeout={500}>
-                <Box m={1/2}>
-                    <Card sx={{width: 200}}>
-                            <CardContent sx={{height: (isEdit ? "auto" : 15)}} 
-                                        style={{textOverflow:"ellipsis"}}>
-                                {
-                                    !isEdit && 
-                                    <Typography noWrap textOverflow={"ellipsis"}
-                                                onClick={() => setIsEdit(true)}
-                                    > 
-                                        {props.text}
-                                    </Typography>
-                                }
-                                {
-                                    isEdit &&
-                                    <ClickAwayListener onClickAway={() => onUpdateTask()}>
-                                        <TextField autoFocus multiline 
-                                                fullWidth 
-                                                autoComplete="off"
-                                                value={text} 
-                                                placeholder={"Enter task"} 
-                                                variant="outlined"
-                                                onChange={onChangeTextHandler}/>
-                                    </ClickAwayListener>
-                                }
-                            </CardContent>
-                        {
-                            !isEdit &&
-                            <CardActions>
-                                <IconButton size="small" onClick={() => onDeleteTask()} >
-                                    <DeleteIcon />
-                                </IconButton>
-                            </CardActions>
-                        }
-                    </Card>
-                </Box>
-            </Grow>
+        <Grow in={true} timeout={500}>
+            <Card className={completed ? "completed" : "pending"}
+                onMouseOver={handleMouseEvent("showButtons")} 
+                onMouseLeave={handleMouseEvent("hideButtons")}>
+                <CardContent>
+                {
+                    /** Show label if state is readonly */
+                    !editMode && 
+                    <Typography className="textLabel" 
+                                onClick={onToggleEdit}> 
+                        {props.text}
+                    </Typography>
+                }
+                {
+                    /** Show text field if state is editable */
+                    editMode &&
+                    <ClickAwayListener onClickAway={onClickAwayHandler}>
+                        <InputBase autoFocus 
+                                multiline 
+                                fullWidth
+                                className="textInput"
+                                autoComplete="off"
+                                value={text} 
+                                placeholder={"Enter task"} 
+                                onChange={onChangeTextHandler}/>
+                    </ClickAwayListener>
+                }
+                </CardContent>
+                <Fade in={showOtherActions && !editMode}>
+                    <CardActions className="actions">
+                        <IconButton size="small" onClick={onDeleteHandler} >
+                            <DeleteIcon />
+                        </IconButton>
+                    </CardActions>
+                </Fade>
+            </Card>
+        </Grow>
     );
 };

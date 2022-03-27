@@ -1,59 +1,52 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import { ITodo } from "../../models/ITodo";
 import { TodoContext } from "./todoContext";
 
-const GET_URL: string = "https://b6g1.azurewebsites.net/Items/";
-const POST_URL: string = "https://b6g1.azurewebsites.net/Items/";
-const PUT_URL: string = "https://b6g1.azurewebsites.net/Items/";
-const DELETE_URL: string = "https://b6g1.azurewebsites.net/Items/";
+axios.defaults.baseURL = 'https://b6g1.azurewebsites.net';
 
-interface IItemModel {
+const GET_URL: string = "/Items/";
+const POST_URL: string = "/Items/";
+const PUT_URL = (id: number): string => `/Items/${id}`;
+const DELETE_URL = (id: number): string => `/Items/${id}`;
+
+interface ITodoModel {
     id: number;
     text: string;
+    completed: boolean;
     createdBy: string;
     dateCreated: Date;
 }
 
 export const TodoContextProvider: React.FC<{}> = (props) => {
-    const {token} = useAuth();
-
-    const [tasks, setTasks] = useState<ITodo[]>([]);
-    const [success, setSuccess] = useState<boolean | undefined>(false);
+    const { token } = useAuth();
+    const [todos, setTodos] = useState<ITodo[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<string[]>([]);
 
     const handleError = (err: any) => {
-        if(err.response?.data[""]){
-            setErrors(err.response?.data[""]);
-        }
-        else if(err.response.data.errors)
-            setErrors(err.response?.data?.errors);
-        else
-            setErrors(["Something went wrong. Please try again."]);
+        setErrors([err.message]);
     };
 
-    const getTasks = async () => {
+    const getTodos = async () => {
         try {
             setErrors([]);
             setLoading(true);
-            setSuccess(undefined);
 
-            const response = await axios.get<IItemModel[]>(GET_URL,
+            const response = await axios.get<ITodoModel[]>(GET_URL,
                 {
                     headers: {"Authorization": token}
-                }
-            );
+                });
 
             const items: ITodo[] = response.data.map(d => {
                 return {
                     id: d.id,
                     text: d.text,
-                    completed: false
+                    completed: d.completed
                 };});
 
-            setTasks([...items]);
+            setTodos([...items]);
         } catch (err: any) {
             handleError(err);
         } finally {
@@ -61,25 +54,16 @@ export const TodoContextProvider: React.FC<{}> = (props) => {
         }
     };
 
-    const addTask = async (text: string) => {
+    const addTodo = async (text: string) => {
         try {
             setErrors([]);
             setLoading(true);
-            setSuccess(undefined);
 
-            await axios.post(POST_URL,
-                {
-                    "text": text
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": token
-                    }
-                }
-            );
+            await axios.post(POST_URL, { "text": text },
+            {
+                headers: { "Content-Type": "application/json", "Authorization": token }
+            });
 
-            await getTasks();
         } catch (err: any) {
             handleError(err);
         } finally {
@@ -87,22 +71,15 @@ export const TodoContextProvider: React.FC<{}> = (props) => {
         }
     };
 
-    const deleteTask = async (id: number) => {
+    const deleteTodo = async (id: number) => {
         try {
             setErrors([]);
             setLoading(true);
-            setSuccess(undefined);
 
-            await axios.delete(DELETE_URL+id,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": token
-                    }
-                }
-            );
-
-            await getTasks();
+            await axios.delete(DELETE_URL(id),
+            {
+                headers: { "Content-Type": "application/json", "Authorization": token }
+            });
         } catch (err: any) {
             handleError(err);
         } finally {
@@ -110,25 +87,19 @@ export const TodoContextProvider: React.FC<{}> = (props) => {
         }
     };
 
-    const updateTask = async (id: number, text: string) => {
+    const updateTodo = async (id: number, 
+                              text: string) => {
         try {
             setErrors([]);
             setLoading(true);
-            setSuccess(undefined);
 
-            await axios.put(PUT_URL+id,
-                {
-                    "text": text
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": token
-                    }
-                }
-            );
-
-            await getTasks();
+            await axios.put(PUT_URL(id), 
+            {
+                "text": text
+            },
+            {
+                headers: { "Content-Type": "application/json", "Authorization": token }
+            });
         } catch (err: any) {
             handleError(err);
         } finally {
@@ -136,31 +107,16 @@ export const TodoContextProvider: React.FC<{}> = (props) => {
         }
     };
 
-    const toggleCompleted = (id: number) => {
-        const updatedTasks = tasks.map(task => {
-            if(task.id !== id) return task;
-
-            return {
-                ...task,
-                completed: !task.completed
-            };
-        });
-
-        setTasks([...updatedTasks]);
-    };
-      
     return(
         <TodoContext.Provider
             value={{
-                tasks: tasks,
-                success: success,
+                todos: todos,
                 loading: loading,
                 errors: errors,
-                getTasks: getTasks,
-                addTask: addTask,
-                deleteTask: deleteTask,
-                updateTask: updateTask,
-                toggleCompleted: toggleCompleted
+                getTodos: getTodos,
+                addTodo: addTodo,
+                deleteTodo: deleteTodo,
+                updateTodo: updateTodo
             }}>
                 {props.children}
         </TodoContext.Provider>
