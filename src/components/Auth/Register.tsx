@@ -21,7 +21,7 @@ export const Register = () => {
 
     const registerUser = async () => {
         const response = await register!(username, email, password, confirmPassword);
-        
+        //Test
         setConfirmEmail(response);
     };
 
