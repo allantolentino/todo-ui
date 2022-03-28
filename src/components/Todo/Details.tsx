@@ -13,21 +13,20 @@ import { useTodo } from "../../hooks/useTodo";
 import { ITodo } from "../../models/ITodo";
 
 export const Details = (props: ITodo) => {
-    const { getTodos, deleteTodo, updateTodo } = useTodo();
+    const { loading, getTodos, deleteTodo, updateTodo } = useTodo();
     
     /** Todo states */
     const [text, setText] = useState<string>(props.text);
-    const [completed, setCompleted] = useState<boolean>(props.completed);
 
     /** UI states */
     const [editMode, setEditMode] = useState<boolean>(false);
     const [showOtherActions, setShowOtherActions] = useState<boolean>(false);
+    const [visible, setVisible] = useState<boolean>(true);
 
     /** Make sure that the component's states are up-to-date */
     useEffect(() => {
-        setText(props.text);
-        setCompleted(props.completed);
-    }, [props.completed, props.text]);
+        if(!loading) setText(props.text);
+    }, [props.text, loading]);
 
     /** Update state of text based on user input */
     const onChangeTextHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,12 +57,13 @@ export const Details = (props: ITodo) => {
 
     /** Delete todo when user clicks on the delete button */
     const onDeleteHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+        setVisible(false);
         deleteTodo(props.id).finally(() => getTodos!());
     };
 
     return (
-        <Grow in={true} timeout={500}>
-            <Card className={completed ? "completed" : "pending"}
+        <Grow in={visible} timeout={500}>
+            <Card className="pending"
                 onMouseOver={handleMouseEvent("showButtons")} 
                 onMouseLeave={handleMouseEvent("hideButtons")}>
                 <CardContent>

@@ -37,7 +37,14 @@ export const Login = () => {
                             <TextField required fullWidth onChange={e => setPassword(e.target.value)} type={"password"} label="Password" variant="standard"/>
                         </Grid>
                         <Grid item>
-                            <Button type={"submit"} disabled={loading} sx={{width:1}} variant="contained">Login</Button>
+                            <Button type={"submit"} disabled={loading} sx={{width:1}} variant="contained">
+                                {
+                                    loading && "Please wait..."
+                                }
+                                {
+                                    !loading && "Login"
+                                }
+                            </Button>
                         </Grid>
                         <Grid item>
                             <Button fullWidth href="/register" variant="text">Register</Button>

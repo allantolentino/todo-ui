@@ -13,6 +13,7 @@ export const AuthProvider: React.FC<{}> = (props) => {
     const [success, setSuccess] = useState<boolean | undefined | null>();
     const [loading, setLoading] = useState<boolean>(false);
     const [errors, setError] = useState<string[]>([]);
+    const [status, setStatus] = useState<"login" | "register" | "confirm" | "none">("none");
 
     useEffect(() => {
         if(token) {
@@ -34,6 +35,7 @@ export const AuthProvider: React.FC<{}> = (props) => {
 
     const login = async (email: string, password: string)=> {
         try {
+            setStatus("login");
             setSuccess(undefined);
             setError([]);
             setLoading(true);
@@ -69,10 +71,35 @@ export const AuthProvider: React.FC<{}> = (props) => {
         axios.defaults.headers.common["Authorization"] = "";
     }
 
+    const confirmAndLogin = async (url: string, email: string, password: string) => {
+        try {
+            setStatus("confirm");
+            setSuccess(undefined);
+            setError([]);
+            setLoading(true);
+
+            await axios.get(url);
+            await setTimeout(async () => await login(email, password), 3000);
+        } catch (err: any) {
+            setSuccess(false);
+
+            if(err.response?.data[""]){
+                setError(err.response?.data[""]);
+            }
+            else if(err.response?.data?.errors)
+                setError(err.response.data.errors);
+            else
+                setError(["Something went wrong. Please try again."]);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const register = async (username: string, email: string, password: string, confirmPassword: string): Promise<string> => {
         let result = "";
         
         try {
+            setStatus("register");
             setSuccess(undefined);
             setError([]);
             setLoading(true);
@@ -84,9 +111,7 @@ export const AuthProvider: React.FC<{}> = (props) => {
                 }
             );
 
-            setSuccess(true);
-
-            result = response.data;
+            await confirmAndLogin(response.data, email, password);
         } catch (err: any) {
             setSuccess(false);
 
@@ -108,6 +133,7 @@ export const AuthProvider: React.FC<{}> = (props) => {
         <AuthContext.Provider value={{
             authenticated: authenticated, 
             token: token,
+            status: status,
             success: success,
             loading: loading,
             errors: errors,

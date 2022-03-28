@@ -1,25 +1,28 @@
 import { Grid, Typography, TextField, Button, Card, CardContent } from "@mui/material"
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 
 export const Register = () => {
-    const { loading, register } = useAuth();
+    const { loading, success, status, register } = useAuth();
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState<string>("");
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
-    const [confirmEmail, setConfirmEmail] = useState<string>("");
     const [disableInputs, setDisableInputs] = useState<boolean>(false);
 
     useEffect(() => {
-        setDisableInputs(loading || confirmEmail.length > 0);
-    }, [loading, confirmEmail]);
+        setDisableInputs(loading || status !== "none");
+    }, [loading, status]);
+
+    useEffect(() => {
+        if(success) navigate("/todo");
+    }, [success]);
 
     const registerUser = async () => {
-        const response = await register!(username, email, password, confirmPassword);
-
-        setConfirmEmail(response);
+        await register!(username, email, password, confirmPassword);
     };
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -53,12 +56,20 @@ export const Register = () => {
                                 <TextField required fullWidth type={"password"} disabled={disableInputs} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} label="Confirm Password" variant="standard"/>
                             </Grid>
                             <Grid item>
-                                {
-                                    !confirmEmail && <Button disabled={disableInputs} type={"submit"} fullWidth variant="contained">Submit</Button>
-                                }
-                                {
-                                    confirmEmail && <Button target="_blank" href={confirmEmail} fullWidth variant="contained">Click here to confirm your email</Button>
-                                }
+                                <Button disabled={disableInputs} type={"submit"} fullWidth variant="contained">
+                                    {
+                                        !loading && status === "none" && "Submit"
+                                    }
+                                    {
+                                        status === "register" && "Registering..."
+                                    }
+                                    {
+                                        status === "confirm" && "Confirming email..."
+                                    }
+                                    {
+                                        status === "login" && "Logging you in..."
+                                    }
+                                </Button>
                             </Grid>
                             <Grid item>
                                 <Button fullWidth href="/login" variant="text">Login</Button>
