@@ -74,14 +74,12 @@ export const AuthProvider: React.FC<{}> = (props) => {
     const confirmAndLogin = async (url: string, email: string, password: string) => {
         try {
             setStatus("confirm");
-            setSuccess(undefined);
             setError([]);
             setLoading(true);
 
             await axios.get(url);
-            await setTimeout(async () => await login(email, password), 3000);
+            await login(email, password);
         } catch (err: any) {
-            setSuccess(false);
 
             if(err.response?.data[""]){
                 setError(err.response?.data[""]);
@@ -123,6 +121,7 @@ export const AuthProvider: React.FC<{}> = (props) => {
             else
                 setError(["Something went wrong. Please try again."]);
         } finally {
+            setStatus("none");
             setLoading(false);
         }
 
@@ -132,7 +131,6 @@ export const AuthProvider: React.FC<{}> = (props) => {
     return(
         <AuthContext.Provider value={{
             authenticated: authenticated, 
-            token: token,
             status: status,
             success: success,
             loading: loading,

@@ -1,7 +1,6 @@
 import React from "react";
 
 export interface IAuthContext {
-    token: string;
     authenticated: boolean;
     status: string;
     success: boolean | undefined | null;
@@ -14,7 +13,6 @@ export interface IAuthContext {
 
 export const AuthContext = React.createContext<IAuthContext>(
     {
-        token: "",
         authenticated: false, 
         status: "",
         success: false, 

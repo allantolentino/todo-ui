@@ -58,7 +58,7 @@ export const Register = () => {
                             <Grid item>
                                 <Button disabled={disableInputs} type={"submit"} fullWidth variant="contained">
                                     {
-                                        !loading && status === "none" && "Submit"
+                                        status === "none" && "Submit"
                                     }
                                     {
                                         status === "register" && "Registering..."

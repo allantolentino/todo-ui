@@ -1,11 +1,27 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Button, Typography } from "@mui/material";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 
 export const RequireAuth = () => {
-    const { authenticated: auth } = useAuth();
+    const { authenticated, logout } = useAuth();
+    const navigate = useNavigate();
     const location = useLocation();
 
+    const onLogout = () => {
+        logout!();
+        navigate("/login");
+    }
+
     return (
-        auth ? <Outlet /> : <Navigate to="/login" state={{from: location}} replace />
+        authenticated ? 
+        <>
+            <div className="authHeader container">
+                <div className="wrapper">
+                    <Button onClick={onLogout}>Logout</Button>
+                </div>
+            </div>
+            <Outlet />
+        </>
+        : <Navigate to="/login" state={{from: location}} replace />
     );
 }

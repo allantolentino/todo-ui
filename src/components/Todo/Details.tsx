@@ -34,7 +34,7 @@ export const Details = (props: ITodo) => {
     };
 
     /** Toggle edit mode when user clicks on the component */
-    const onToggleEdit = (e: React.MouseEvent<HTMLSpanElement>) => {
+    const onToggleEdit = () => {
         setEditMode(!editMode);
     };
 

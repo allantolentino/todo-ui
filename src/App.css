@@ -1,3 +1,7 @@
+body {
+  background-color: #b2bec3;
+}
+
 .container {
   display: flex;
 }
@@ -10,6 +14,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.authHeader {
+  justify-content: flex-end;
 }
 
 .dashboard.container .wrapper, 
@@ -46,7 +54,7 @@
 }
 
 .todo .pending {
-  background-color: khaki;
+  background-color: #fdcb6e;
 }
 
 .todo .textLabel {
@@ -64,4 +72,8 @@
 
 .todo .actions {
   justify-content: flex-end;
+}
+
+.add input {
+  text-align: center;
 }
