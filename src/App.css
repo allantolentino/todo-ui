@@ -67,7 +67,7 @@ body {
 .todo .textInput {
   padding-top: 1px;
   line-height: 1.5;
-  padding-bottom: 0;
+  padding-bottom: 1px;
 }
 
 .todo .actions {
